@@ -19,9 +19,10 @@ import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
-//Lists
+// Lists
 import UsersList from "./lists/UsersList";
 import DriversList from "./lists/DriversList";
+
 // Utils
 import ProtectedRoute from "./utils/ProtectedRoute";
 
@@ -29,16 +30,15 @@ function App() {
   const [authRole, setAuthRole] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
 
-  // 🔐 Check authentication on app load
+  // 🔐 Check authentication on app load (cookie-based)
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await api.get("/auth/profile"); // cookie-based
+        const res = await api.get("/auth/profile");
         setAuthRole(res.data.role);
         localStorage.setItem("role", res.data.role);
         localStorage.setItem("name", res.data.name);
       } catch (err) {
-        // Not logged in (401 expected)
         localStorage.removeItem("role");
         localStorage.removeItem("name");
         setAuthRole(null);
@@ -50,30 +50,69 @@ function App() {
     checkAuth();
   }, []);
 
-  // ⏳ Prevent UI flicker before auth check completes
-  if (!authChecked) return null;
+  // ⏳ Prevent UI flicker
+  if (!authChecked) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <p>Checking authentication...</p>
+      </div>
+    );
+  }
 
   return (
     <>
       <Navbar authRole={authRole} setAuthRole={setAuthRole} />
 
       <Routes>
-        {/* Public routes */}
+        {/* ===== Public Routes ===== */}
         <Route path="/" element={<AboutUs />} />
         <Route path="/our-mission" element={<OurMission />} />
         <Route path="/login" element={<Login setAuthRole={setAuthRole} />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Shared protected routes */}
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/user/waste" element={<MyWastes />} />
+        {/* ===== Shared Protected Routes ===== */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute authRole={authRole}>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Role-based protected routes */}
+        <Route
+          path="/user/waste"
+          element={
+            <ProtectedRoute role="user" authRole={authRole}>
+              <MyWastes />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ===== Role-Based Protected Routes ===== */}
         <Route
           path="/admin"
           element={
             <ProtectedRoute role="admin" authRole={authRole}>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute role="admin" authRole={authRole}>
+              <UsersList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/drivers"
+          element={
+            <ProtectedRoute role="admin" authRole={authRole}>
+              <DriversList />
             </ProtectedRoute>
           }
         />
@@ -94,15 +133,6 @@ function App() {
               <DriverDashboard />
             </ProtectedRoute>
           }
-        />
-        <Route
-          path="/admin/users"
-          element={<UsersList />}
-        />
-        
-        <Route
-          path="/admin/drivers"
-          element={<DriversList />}
         />
       </Routes>
 
