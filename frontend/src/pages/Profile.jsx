@@ -7,11 +7,20 @@ const Profile = () => {
     name: "",
     email: "",
     phone: "",
-    address: { houseOrFlat: "", street: "", area: "", city: "", state: "", pincode: "" },
+    role: "",
+    licenseNumber: "",
+    aadhaarNumber: "",
+    address: {
+      line1: "",
+      city: "",
+      state: "",
+      pincode: "",
+    },
   });
 
   const [isEditing, setIsEditing] = useState(false);
 
+  // 🔹 Load profile
   useEffect(() => {
     api
       .get("/auth/profile", { withCredentials: true })
@@ -21,24 +30,24 @@ const Profile = () => {
           name: data.name || "",
           email: data.email || "",
           phone: data.phone || "",
+          role: data.role || "",
+          licenseNumber: data.licenseNumber || "",
+          aadhaarNumber: data.aadhaarNumber || "",
           address: {
-            houseOrFlat: data.address?.houseOrFlat || "",
-            street: data.address?.street || "",
-            area: data.address?.area || "",
+            line1: data.address?.line1 || "",
             city: data.address?.city || "",
             state: data.address?.state || "",
             pincode: data.address?.pincode || "",
           },
         });
       })
-      .catch((err) => {
-        console.error("Profile fetch error:", err);
-        toast.error("Failed to load profile");
-      });
+      .catch(() => toast.error("Failed to load profile"));
   }, []);
 
+  // 🔹 Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     if (name.startsWith("address.")) {
       const key = name.split(".")[1];
       setForm((prev) => ({
@@ -50,17 +59,21 @@ const Profile = () => {
     }
   };
 
+  // 🔹 Save profile (only editable fields)
   const saveProfile = () => {
+    const payload = {
+      name: form.name,
+      phone: form.phone,
+      address: form.address,
+    };
+
     api
-      .put("/auth/profile", form, { withCredentials: true })
+      .put("/auth/profile", payload, { withCredentials: true })
       .then(() => {
         toast.success("Profile updated successfully!");
         setIsEditing(false);
       })
-      .catch((err) => {
-        console.error("Profile update error:", err);
-        toast.error("Failed to update profile");
-      });
+      .catch(() => toast.error("Failed to update profile"));
   };
 
   return (
@@ -69,23 +82,22 @@ const Profile = () => {
 
       {/* Name */}
       <div className="mb-3">
-        <label className="font-medium">Name:</label>
+        <label className="font-medium">Name</label>
         <input
-          type="text"
           name="name"
           value={form.name}
           onChange={handleChange}
           disabled={!isEditing}
-          className={`border p-2 w-full rounded ${isEditing ? "bg-white" : "bg-gray-100"}`}
+          className={`border p-2 w-full rounded ${
+            isEditing ? "bg-white" : "bg-gray-100"
+          }`}
         />
       </div>
 
-      {/* Email */}
+      {/* Email (read-only) */}
       <div className="mb-3">
-        <label className="font-medium">Email:</label>
+        <label className="font-medium">Email</label>
         <input
-          type="email"
-          name="email"
           value={form.email}
           readOnly
           className="border p-2 w-full rounded bg-gray-100"
@@ -94,34 +106,62 @@ const Profile = () => {
 
       {/* Phone */}
       <div className="mb-3">
-        <label className="font-medium">Phone:</label>
+        <label className="font-medium">Phone</label>
         <input
-          type="text"
           name="phone"
           value={form.phone}
           onChange={handleChange}
           disabled={!isEditing}
-          className={`border p-2 w-full rounded ${isEditing ? "bg-white" : "bg-gray-100"}`}
+          className={`border p-2 w-full rounded ${
+            isEditing ? "bg-white" : "bg-gray-100"
+          }`}
         />
       </div>
 
-      {/* Address Fields */}
+      {/* 🚗 Driver-only (READ-ONLY) */}
+      {form.role === "driver" && (
+        <>
+          <div className="mb-3">
+            <label className="font-medium">License Number</label>
+            <input
+              value={form.licenseNumber}
+              readOnly
+              className="border p-2 w-full rounded bg-gray-100"
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="font-medium">Aadhaar Number</label>
+            <input
+              value={form.aadhaarNumber}
+              readOnly
+              className="border p-2 w-full rounded bg-gray-100"
+            />
+          </div>
+        </>
+      )}
+
+      {/* Address */}
       <h3 className="font-semibold mb-2">Permanent Address</h3>
 
-      {["houseOrFlat", "street", "area", "city", "state", "pincode"].map((field) => (
+      {["line1", "city", "state", "pincode"].map((field) => (
         <div className="mb-2" key={field}>
-          <label className="text-sm capitalize">{field.replace(/([A-Z])/g, " $1")}:</label>
+          <label className="text-sm capitalize">
+            {field === "line1" ? "Address Line" : field}
+          </label>
           <input
             name={`address.${field}`}
-            value={form.address[field] || ""}
+            value={form.address[field]}
             onChange={handleChange}
             disabled={!isEditing}
-            className={`border p-2 w-full rounded ${isEditing ? "bg-white" : "bg-gray-100"}`}
+            className={`border p-2 w-full rounded ${
+              isEditing ? "bg-white" : "bg-gray-100"
+            }`}
           />
         </div>
       ))}
 
-      {/* Buttons */}
+      {/* Actions */}
       {!isEditing ? (
         <button
           onClick={() => setIsEditing(true)}

@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   type: String,
   validate: {
     validator: function (v) {
-      if (this.role === "driver") {
+      if (this.role === "driver" || this.role === "user") {
         return typeof v === "string" && v.trim().length > 0;
       }
       return true;
@@ -36,7 +36,19 @@ const userSchema = new mongoose.Schema({
    licenseNumber: {
   type: String,
   required: function() { return this.role === "driver"; }
-},
+  },
+    aadhaarNumber: {
+      type: String,
+      required: function () {
+        return this.role === "driver";
+      },
+        validate: {
+        validator: function (v) {
+          return /^\d{12}$/.test(v); // Aadhaar = 12 digits
+        },
+        message: "Aadhaar number must be exactly 12 digits",
+      },
+    },
 
 adminCode: {
   type: String,

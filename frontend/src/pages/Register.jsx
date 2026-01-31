@@ -12,7 +12,10 @@ export default function Register() {
     email: "",
     password: "",
     role: "user",
-    phone: ""
+    phone: "",
+      licenseNumber: "",
+    aadhaarNumber: "",
+    adminCode: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -40,19 +43,49 @@ export default function Register() {
       toast.error("Phone number is required for selected role");
       return false;
     }
+    if (form.role === "driver") {
+      if (!form.licenseNumber.trim()) {
+        toast.error("License number is required for drivers");
+        return false;
+      }
+      if (!/^\d{12}$/.test(form.aadhaarNumber)) {
+        toast.error("Aadhaar number must be 12 digits");
+        return false;
+      }
+    }
+    if (form.role === "admin" && !form.adminCode.trim()) {
+      toast.error("Admin code is required");
+      return false;
+    }
     return true;
   };
+
 
   const submit = async () => {
     if (!validate()) return;
 
     setLoading(true);
     try {
-      const payload =
-        form.role === "admin"
-          ? { name: form.name, email: form.email, password: form.password, role: form.role }
-          : form;
+      const payload = {
+           name: form.name,
+        email: form.email,
+        password: form.password,
+        role: form.role,
+      };
 
+      if (form.role === "user" || form.role === "driver") {
+        payload.phone = form.phone;
+      }
+
+      if (form.role === "driver") {
+        payload.licenseNumber = form.licenseNumber;
+        payload.aadhaarNumber = form.aadhaarNumber;
+      }
+
+      if (form.role === "admin") {
+        payload.adminCode = form.adminCode;
+      }
+        
       await api.post("/auth/register", payload);
 
       toast.success("Registered successfully! Redirecting...");
@@ -128,12 +161,38 @@ export default function Register() {
           {/* Phone for users & drivers */}
           {(form.role === "user" || form.role === "driver") && (
             <input
+              type="text"
               placeholder="Phone Number"
               value={form.phone}
               onChange={e => setForm({ ...form, phone: e.target.value })}
               className="w-full border border-gray-300 p-2 rounded mb-4 focus:outline-none focus:border-indigo-500"
             />
           )}
+                {form.role === "driver" && (
+          <>
+            <input
+              placeholder="License Number"
+              value={form.licenseNumber}
+              onChange={e => setForm({ ...form, licenseNumber: e.target.value })}
+              className="w-full border p-2 rounded mb-4"
+            />
+
+            <input
+              placeholder="Aadhaar Number"
+              value={form.aadhaarNumber}
+              onChange={e => setForm({ ...form, aadhaarNumber: e.target.value })}
+              className="w-full border p-2 rounded mb-4"
+            />
+          </>
+          )}
+              {form.role === "admin" && (
+          <input
+            placeholder="Admin Code"
+            value={form.adminCode}
+            onChange={e => setForm({ ...form, adminCode: e.target.value })}
+            className="w-full border p-2 rounded mb-4"
+          />
+        )}
 
           {/* Submit button */}
           <button

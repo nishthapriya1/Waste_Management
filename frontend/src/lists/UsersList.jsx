@@ -11,7 +11,9 @@ export default function UsersList() {
 
   const fetchUsers = async () => {
     try {
-      const res = await api.get("/auth/users?role=user", { withCredentials: true });
+      const res = await api.get("/auth/users?role=user", {
+        withCredentials: true,
+      });
       setUsers(res.data);
     } catch (err) {
       toast.error("Failed to fetch users");
@@ -21,6 +23,7 @@ export default function UsersList() {
   return (
     <div className="px-6 py-8">
       <h2 className="text-2xl font-semibold mb-6">All Users</h2>
+
       {users.length === 0 ? (
         <p>No users found.</p>
       ) : (
@@ -28,10 +31,22 @@ export default function UsersList() {
           {users.map((user) => (
             <div
               key={user._id}
-              className="bg-white p-4 rounded shadow flex justify-between items-center"
+              className="bg-white p-4 rounded shadow"
             >
-              <p className="font-medium">{user.name} ({user.email})</p>
-              <p className="text-sm text-gray-600">Role: {user.role}</p>
+              <p className="font-medium text-lg">
+                {user.name}{" "}
+                <span className="text-gray-600">({user.email})</span>
+              </p>
+
+              {user.phone && (
+                <p className="text-sm text-gray-700">
+                  📞 Phone: {user.phone}
+                </p>
+              )}
+
+              <p className="text-sm text-gray-600">
+                Role: {user.role}
+              </p>
             </div>
           ))}
         </div>

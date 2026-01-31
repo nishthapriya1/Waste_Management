@@ -4,7 +4,9 @@ import jwt from 'jsonwebtoken';
 
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role,phone} = req.body;
+    const { name, email, password, role,phone,licenseNumber,
+  aadhaarNumber,
+  adminCode,} = req.body;
 
     // Check if user already exists
        if (role === "driver" && !phone) {
@@ -24,7 +26,10 @@ export const registerUser = async (req, res) => {
       email,
       password: hashed,
       role,
-      phone
+      phone,
+      licenseNumber,
+      aadhaarNumber,
+      adminCode,
     });
 
     // 🔐 GENERATE JWT TOKEN
