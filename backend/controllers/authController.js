@@ -40,8 +40,8 @@ export const registerUser = async (req, res) => {
     );
     res.cookie("token", token, {
   httpOnly: true,
-  sameSite: "strict",
-  secure: process.env.NODE_ENV === "production"
+  sameSite: "none",
+      secure: true
    });
     // ✅ SEND TOKEN
     res.status(201).json({
@@ -84,8 +84,8 @@ export const loginUser = async (req, res) => {
     );
       res.cookie("token", token, {
     httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production"
+    sameSite: "none",
+    secure: true
   });
 
     res.status(200).json({
@@ -104,8 +104,8 @@ export const loginUser = async (req, res) => {
 export const logoutUser = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production"
+    sameSite: "none",
+    secure: true
   });
 
   res.status(200).json({ msg: "Logged out" });
@@ -118,8 +118,8 @@ export const deleteAccount = async (req, res) => {
 
     res.clearCookie("token", {
       httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      secure: true
     });
 
     res.status(200).json({ msg: "Account deleted successfully" });
