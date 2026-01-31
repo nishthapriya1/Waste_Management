@@ -13,7 +13,7 @@ connectDB();
 
 const app = express();
 app.use(cors({
-  origin: "https://waste-management-frontend1.onrender.com/login", // 👈 EXACT frontend URL
+  origin: "http://localhost:5173", // 👈 EXACT frontend URL
   credentials: true                // 👈 REQUIRED for cookies
 }));
 const port = process.env.PORT || 5000;
