@@ -58,12 +58,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         path: "/user/waste",
         icon: HiOutlineClipboardList,
         iconColor: "text-indigo-600",
-      },
-      {
-        label: "Notifications",
-        path: "/user/notifications",
-        icon: HiOutlineBell,
-        iconColor: "text-yellow-400",
       }
     );
   }

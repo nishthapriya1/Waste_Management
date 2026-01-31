@@ -57,9 +57,6 @@ export default function Navbar({ authRole, setAuthRole }) {
                   <Link to="/admin" className="hover:text-gray-300">
                     Admin Dashboard
                   </Link>
-                  <Link to="/admin/users" className="hover:text-gray-300">
-                    Users
-                  </Link>
                 </>
               )}
               {authRole === "user" && (
