@@ -16,6 +16,7 @@ app.use(cors({
   origin: "http://localhost:5173", // 👈 EXACT frontend URL
   credentials: true                // 👈 REQUIRED for cookies
 }));
+const port = process.env.PORT || 5000;
 app.use(cookieParser());
 app.use(express.json());
 app.use('/api/auth',authRoutes);
