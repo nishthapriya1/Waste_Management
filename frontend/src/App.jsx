@@ -29,36 +29,32 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 function App() {
   const [authRole, setAuthRole] = useState(null);
   const [authChecked, setAuthChecked] = useState(false);
-
-  // 🔐 Check authentication on app load (cookie-based)
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await api.get("/auth/profile");
-        setAuthRole(res.data.role);
-        localStorage.setItem("role", res.data.role);
-        localStorage.setItem("name", res.data.name);
-      } catch (err) {
-        localStorage.removeItem("role");
-        localStorage.removeItem("name");
-        setAuthRole(null);
-      } finally {
-        setAuthChecked(true);
-      }
-    };
+  const role = localStorage.getItem("role");
 
-    checkAuth();
-  }, []);
-
-  // ⏳ Prevent UI flicker
-  if (!authChecked) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <p>Checking authentication...</p>
-      </div>
-    );
+  if (role) {
+    setAuthRole(role);
+    setAuthChecked(true);
+    return;
   }
 
+  const checkAuth = async () => {
+    try {
+      const res = await api.get("/auth/profile");
+      setAuthRole(res.data.role);
+      localStorage.setItem("role", res.data.role);
+      localStorage.setItem("name", res.data.name);
+    } catch (err) {
+      setAuthRole(null);
+    } finally {
+      setAuthChecked(true);
+    }
+  };
+
+  checkAuth();
+}, []);
+
+ 
   return (
     <>
       <Navbar authRole={authRole} setAuthRole={setAuthRole} />
