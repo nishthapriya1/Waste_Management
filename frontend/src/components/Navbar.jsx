@@ -26,9 +26,10 @@ export default function Navbar({ authRole, setAuthRole }) {
     <>
       <nav className="flex justify-between items-center bg-[#000035] text-white px-6 py-3 w-full">
         {/* Brand */}
-        <Link to="/" className="font-bold text-xl hover:text-gray-300">
-          Waste Management
-        </Link>
+       <Link to="/" className="font-bold text-xl hover:text-gray-300 flex items-center gap-2">
+  <img src="/logo.png" alt="logo" className="w-8 h-8" />
+  Waste Flow
+</Link>
 
         {/* Links */}
         <div className="flex space-x-6 text-lg items-center">
