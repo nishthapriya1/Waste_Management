@@ -6,6 +6,7 @@ import  connectDB  from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import wasteRoutes from './routes/wasteRoutes.js';                                                                                                
 import profileRoutes from "./routes/profile.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 
 dotenv.config();
@@ -22,4 +23,5 @@ app.use(express.json());
 app.use('/api/auth',authRoutes);
 app.use('/api/waste', wasteRoutes);
 app.use("/api/auth/profile", profileRoutes);
+app.use("/api/ai",aiRoutes);
 app.listen(process.env.PORT,()=>console.log('Server running on port '+process.env.PORT));

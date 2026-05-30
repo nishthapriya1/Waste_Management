@@ -9,6 +9,7 @@ export default function UserDashboard() {
 
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
+  const [aiLoading,setAiLoading]=useState(false);
 
   // Address
   const [houseOrFlat, setHouseOrFlat] = useState("");
@@ -53,7 +54,47 @@ export default function UserDashboard() {
       (err) => alert(err.message)
     );
   };
+const getAiCategory=async()=>{
 
+ if(!description.trim()){
+
+  alert("Enter description first");
+  return;
+
+ }
+
+ try{
+
+  setAiLoading(true);
+
+  const res=await api.post(
+   "/ai/category",
+   {
+    description
+   }
+  );
+
+  setCategory(
+   res.data.category
+   .toLowerCase()
+   .replace(" waste","")
+  );
+
+ }
+ catch(err){
+
+  alert(
+   "AI category detection failed"
+  );
+
+ }
+ finally{
+
+  setAiLoading(false);
+
+ }
+
+};
   const submit = async () => {
     const newErrors = {};
     if (!category) newErrors.category = "Category is required";
@@ -160,31 +201,77 @@ export default function UserDashboard() {
           <div>
             <label className="block text-sm font-medium text-gray-700">Category</label>
             <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="mt-1 block w-full border-gray-300 rounded-md"
-            >
-              <option value="">Select category</option>
-              <option value="electronic">Electronic Waste</option>
-              <option value="paper">Paper Waste</option>
-              <option value="cloth">Cloth Waste</option>
-              <option value="medical">Medical Waste</option>
-            </select>
-            {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
+  value={category}
+  onChange={(e) => setCategory(e.target.value)}
+  className="mt-1 block w-full border-gray-300 rounded-md"
+>
+  <option value="">Select category</option>
+  <option value="electronic">Electronic Waste</option>
+  <option value="paper">Paper Waste</option>
+  <option value="cloth">Cloth Waste</option>
+  <option value="medical">Medical Waste</option>
+</select>
+
+{
+ category &&
+ <p
+  className="
+  text-green-600
+  text-sm
+  mt-1
+  "
+ >
+  Selected:
+  {category}
+ </p>
+}
+
+{errors.category && (
+  <p className="text-red-500 text-sm">
+    {errors.category}
+  </p>
+)}
           </div>
 
           {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 w-full border-gray-300 rounded-md"
-              rows="3"
-            />
-            {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
-          </div>
+         <div>
+  <label className="block text-sm font-medium text-gray-700">
+    Description
+  </label>
 
+  <textarea
+    value={description}
+    onChange={(e) => setDescription(e.target.value)}
+    className="mt-1 w-full border-gray-300 rounded-md"
+    rows="3"
+  />
+
+  <button
+    type="button"
+    onClick={getAiCategory}
+    disabled={aiLoading}
+    className="
+    mt-2
+    bg-indigo-600
+    text-white
+    px-4
+    py-2
+    rounded-md
+    "
+  >
+    {
+      aiLoading
+      ? "Detecting..."
+      : "AI Suggest Category"
+    }
+  </button>
+
+  {errors.description && (
+    <p className="text-red-500 text-sm">
+      {errors.description}
+    </p>
+  )}
+</div>
           {/* Live Location */}
           <div className="flex items-center space-x-2">
             <input
