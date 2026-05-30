@@ -8,7 +8,7 @@ export default defineConfig({
    server: {
     proxy: {
       "/api": {
-        target: "https://waste-management-dqro.onrender.com",
+        target: "https://waste-management-backend-oavk.onrender.com",
         changeOrigin: true,
         secure: false
       }
